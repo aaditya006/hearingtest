@@ -1,0 +1,81 @@
+<?php
+/**
+ * Plugin Name: Online Hearing Test
+ * Plugin URI: https://yourwebsite.com/
+ * Description: A simple online hearing test plugin.
+ * Version: 1.0
+ * Author: Your Name
+ * Author URI: https://yourwebsite.com/
+ * License: GPL2
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Shortcode to display the hearing test
+function hearing_test_shortcode() {
+    ob_start(); ?>
+    <style>
+        #hearing-test {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        #company-logo {
+            max-width: 100px;
+            display: block;
+            margin: 0 auto 10px;
+        }
+        #company-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+    <div id="hearing-test">
+        <img id="company-logo" src="https://shreyahearingclinic.com/wp-content/uploads/2024/11/Untitled-design-1-2-e1732527451391.jpg" alt="Company Logo">
+        <div id="company-name">Shreya Hearing Clinic</div>
+        <h2>Online Hearing Test</h2>
+        <p>Click the buttons below to play different frequency tones.</p>
+        <button onclick="playTone(250)">250 Hz</button>
+        <button onclick="playTone(500)">500 Hz</button>
+        <button onclick="playTone(1000)">1000 Hz</button>
+        <button onclick="playTone(2000)">2000 Hz</button>
+        <button onclick="playTone(4000)">4000 Hz</button>
+        <button onclick="playTone(8000)">8000 Hz</button>
+    </div>
+    <script>
+        function playTone(freq) {
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var oscillator = audioCtx.createOscillator();
+            oscillator.type = "sine";
+            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            oscillator.connect(audioCtx.destination);
+            oscillator.start();
+            setTimeout(() => oscillator.stop(), 1000);
+        }
+    </script>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('hearing_test', 'hearing_test_shortcode');
