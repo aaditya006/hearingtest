@@ -51,29 +51,67 @@ function hearing_test_shortcode() {
         button:hover {
             background-color: #005bb5;
         }
+        #frequency-display {
+            font-size: 18px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
     </style>
     <div id="hearing-test">
-        <img id="company-logo" src="https://shreyahearingclinic.com/wp-content/uploads/2024/11/Untitled-design-1-2-e1732527451391.jpg" alt="Company Logo">
+        <img id="company-logo" src="https://content.jdmagicbox.com/v2/comp/hyderabad/l9/040pxx40.xx40.100202071542.v2l9/catalogue/shreya-hearing-clinic-banjara-hills-hyderabad-clinics-bl7prf9mlb.jpg?fit=around%7C550:350&crop=550:350;*,*" alt="Company Logo">
         <div id="company-name">Shreya Hearing Clinic</div>
-        <h2>Online Hearing Test</h2>
-        <p>Click the buttons below to play different frequency tones.</p>
-        <button onclick="playTone(250)">250 Hz</button>
-        <button onclick="playTone(500)">500 Hz</button>
-        <button onclick="playTone(1000)">1000 Hz</button>
-        <button onclick="playTone(2000)">2000 Hz</button>
-        <button onclick="playTone(4000)">4000 Hz</button>
-        <button onclick="playTone(8000)">8000 Hz</button>
+        <button id="start-test">Start Online Hearing Test</button>
+        <div id="frequency-display" style="display: none;"></div>
     </div>
     <script>
-        function playTone(freq) {
-            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            var oscillator = audioCtx.createOscillator();
-            oscillator.type = "sine";
-            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            oscillator.connect(audioCtx.destination);
-            oscillator.start();
-            setTimeout(() => oscillator.stop(), 1000);
-        }
+        document.getElementById("start-test").addEventListener("click", function() {
+            let frequencies = [500, 1000, 2000, 4000];
+            let index = 0;
+            let frequencyDisplay = document.getElementById("frequency-display");
+            frequencyDisplay.style.display = "block";
+            
+            function playNextFrequency() {
+                if (index < frequencies.length) {
+                    let freq = frequencies[index];
+                    frequencyDisplay.innerText = "Playing: " + freq + " Hz";
+                    playTone(freq, function() {
+                        index++;
+                        playNextFrequency();
+                    });
+                } else {
+                    setTimeout(askHearingResponse, 2000);
+                }
+            }
+            
+            function playTone(freq, callback) {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let oscillator = audioCtx.createOscillator();
+                oscillator.type = "sine";
+                oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                oscillator.connect(audioCtx.destination);
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    callback();
+                }, 1000);
+            }
+            
+            function askHearingResponse() {
+                let response = prompt("Which was the last frequency you could hear? (Enter in Hz)");
+                if (response) {
+                    let lastFrequency = parseInt(response);
+                    if (lastFrequency >= 4000) {
+                        alert("Your hearing is good!");
+                    } else if (lastFrequency >= 2000) {
+                        alert("Your hearing is moderate. Consider checking with an audiologist.");
+                    } else {
+                        alert("You may have hearing loss. Please consult a specialist.");
+                    }
+                }
+            }
+            
+            playNextFrequency();
+        });
     </script>
     <?php
     return ob_get_clean();
